@@ -1,0 +1,23 @@
+product_id,product_name,category,unit,current_stock,avg_daily_sales,lead_time_days,safety_stock,reorder_level,seasonality
+CP001,OPC 53 Grade Cement,Cement,bags,100,15.0,5,40,75,Normal
+CP002,PPC Cement,Cement,bags,180,12.0,4,35,60,Normal
+CP003,White Cement,Cement,bags,25,3.0,4,15,20,Normal
+CP004,8mm TMT Steel Rods,Steel,tons,8,1.0,7,4,6,High
+CP005,10mm TMT Steel Rods,Steel,tons,12,1.5,6,5,8,Normal
+CP006,12mm TMT Steel Rods,Steel,tons,3,1.0,8,5,7,High
+CP007,16mm TMT Steel Rods,Steel,tons,15,1.0,7,4,7,Normal
+CP008,Binding Wire,Steel,kg,200,20.0,3,50,80,Normal
+CP009,Red Clay Bricks,Bricks,units,5000,500.0,3,1000,1800,High
+CP010,Fly Ash Bricks,Bricks,units,2500,250.0,4,700,1200,Normal
+CP011,AAC Blocks,Blocks,units,300,40.0,5,100,180,High
+CP012,M-Sand,Aggregates,tons,20,5.0,2,8,12,Normal
+CP013,Blue Metal Gravel,Aggregates,tons,40,3.0,3,10,15,Normal
+CP014,Exterior Primer,Paint,litres,80,8.0,4,25,40,High
+CP015,Weatherproof Exterior Paint,Paint,litres,15,5.0,5,20,30,High
+CP016,Wall Care Putty,Finishing,kg,600,60.0,4,150,250,Normal
+CP017,Waterproofing Chemical,Chemicals,litres,50,4.0,5,15,25,High
+CP018,PVC Pipes,Plumbing,units,200,15.0,4,50,80,Normal
+CP019,CPVC Pipes,Plumbing,units,8,5.0,6,20,30,High
+CP020,PVC Pipe Solvent Cement,Plumbing,cans,150,5.0,3,20,40,Normal
+CP021,Emergency Cement Stock,Cement,bags,0,5.0,6,20,40,High
+CP022,Excess Binding Wire Stock,Steel,kg,500,2.0,5,20,50,Normal

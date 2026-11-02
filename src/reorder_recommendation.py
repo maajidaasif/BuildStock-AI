@@ -26,24 +26,21 @@ DECISIONS_FILE = DATA_DIR / "inventory_decisions.csv"
 OUTPUT_FILE = DATA_DIR / "reorder_recommendations.csv"
 
 REQUIRED_DATA_COLUMNS = [
-    "product_id",
-    "product_name",
-    "category",
-    "unit",
-    "current_stock",
-    "avg_daily_sales",
-    "lead_time_days",
-    "safety_stock",
-    "reorder_level",
-    "seasonality",
+    "product_id", "product_name", "category", "unit",
+    "current_stock", "avg_daily_sales", "lead_time_days",
+    "safety_stock", "reorder_level", "seasonality",
 ]
 
 REQUIRED_DECISION_COLUMNS = ["product_id", "decision_category"]
 
 REORDER_STATUSES = {"URGENT REORDER", "REORDER SOON"}
+
+NO_SALES_STATUS = "NO SALES - REVIEW REQUIRED"
+
 VALID_STATUSES = REORDER_STATUSES | {
     "OVERSTOCK RISK",
     "STOCK HEALTHY",
+    NO_SALES_STATUS,
 }
 
 NUMERIC_COLUMNS = [
@@ -56,7 +53,8 @@ NUMERIC_COLUMNS = [
 
 
 def load_config():
-    """Read optional configuration; use safe defaults if absent."""
+    """Load inventory configuration with safe defaults."""
+
     config = {
         "seasonal_safety_multiplier": 1.2,
         "normal_safety_multiplier": 1.0,
@@ -68,8 +66,14 @@ def load_config():
     try:
         with CONFIG_FILE.open("r", encoding="utf-8") as file:
             supplied = json.load(file)
-    except (OSError, json.JSONDecodeError) as error:
-        raise ValueError(f"Invalid inventory rules JSON: {error}") from error
+
+        if not isinstance(supplied, dict):
+            raise ValueError("Configuration must be a JSON object.")
+
+    except (OSError, json.JSONDecodeError, ValueError) as error:
+        raise ValueError(
+            f"Invalid inventory rules JSON: {error}"
+        ) from error
 
     for key in config:
         if key in supplied:
@@ -89,7 +93,8 @@ def load_config():
 
 
 def load_and_validate_data():
-    """Load product and decision CSV files and validate their contents."""
+    """Load and validate product and decision CSV files."""
+
     if not DATASET_FILE.exists():
         raise FileNotFoundError(
             f"Dataset not found: {DATASET_FILE}\n"
@@ -105,6 +110,7 @@ def load_and_validate_data():
     try:
         products = pd.read_csv(DATASET_FILE)
         decisions = pd.read_csv(DECISIONS_FILE)
+
     except (OSError, pd.errors.ParserError, UnicodeError) as error:
         raise ValueError(f"Could not read CSV input: {error}") from error
 
@@ -113,26 +119,30 @@ def load_and_validate_data():
 
     if missing_data:
         raise ValueError(f"Dataset missing columns: {sorted(missing_data)}")
+
     if missing_decisions:
         raise ValueError(
             f"Decisions missing columns: {sorted(missing_decisions)}"
         )
-    if products.empty:
-        raise ValueError("The construction dataset is empty.")
-    if decisions.empty:
-        raise ValueError("The decision dataset is empty.")
+
+    if products.empty or decisions.empty:
+        raise ValueError("Product or decision dataset is empty.")
 
     for frame, label in [(products, "products"), (decisions, "decisions")]:
         if frame["product_id"].isna().any():
             raise ValueError(f"Missing product IDs in {label}.")
+
         frame["product_id"] = frame["product_id"].astype(str).str.strip()
+
         if frame["product_id"].eq("").any():
             raise ValueError(f"Empty product IDs in {label}.")
+
         if frame["product_id"].duplicated().any():
             raise ValueError(f"Duplicate product IDs in {label}.")
 
     for column in ["product_name", "category", "unit", "seasonality"]:
         products[column] = products[column].astype("string").str.strip()
+
         if products[column].isna().any() or products[column].eq("").any():
             raise ValueError(f"Missing or empty values in '{column}'.")
 
@@ -161,6 +171,7 @@ def load_and_validate_data():
         raise ValueError("Missing decision categories.")
 
     invalid = set(decisions["decision_category"].unique()) - VALID_STATUSES
+
     if invalid:
         raise ValueError(f"Invalid decision categories: {sorted(invalid)}")
 
@@ -172,24 +183,44 @@ def load_and_validate_data():
         indicator=True,
     )
 
-    missing_ids = merged.loc[merged["_merge"] != "both", "product_id"].tolist()
+    missing_ids = merged.loc[
+        merged["_merge"] != "both", "product_id"
+    ].tolist()
+
     if missing_ids:
         raise ValueError(f"Products missing decisions: {missing_ids}")
 
-    # Do not silently ignore decision IDs that have no matching product.
     extra_ids = set(decisions["product_id"]) - set(products["product_id"])
-    if extra_ids:
-        raise ValueError(f"Decisions reference unknown products: {sorted(extra_ids)}")
 
-    return merged.drop(columns=["_merge"])
+    if extra_ids:
+        raise ValueError(
+            f"Decisions reference unknown products: {sorted(extra_ids)}"
+        )
+
+    merged = merged.drop(columns=["_merge"])
+
+    # Verify that zero-sales products have the correct decision status.
+    zero_sales = merged["avg_daily_sales"] == 0
+    no_sales_status = merged["decision_category"] == NO_SALES_STATUS
+
+    if (zero_sales != no_sales_status).any():
+        raise ValueError(
+            "Sales and decision status mismatch. "
+            "Products with zero daily sales must have "
+            "'NO SALES - REVIEW REQUIRED'. "
+            "Run Module 4 again."
+        )
+
+    return merged
 
 
 def calculate_reorder_quantity(row, config):
-    """
-    Use the mentor formula with an optional seasonal safety-stock buffer.
-    Reorder-level logic is also considered as an additional target threshold.
-    """
-    if row["decision_category"] not in REORDER_STATUSES:
+    """Calculate advisory replenishment quantity."""
+
+    status = row["decision_category"]
+
+    # No-sales and non-reorder products must not receive quantities.
+    if status not in REORDER_STATUSES:
         return 0
 
     current_stock = float(row["current_stock"])
@@ -199,29 +230,36 @@ def calculate_reorder_quantity(row, config):
     reorder_level = float(row["reorder_level"])
 
     seasonality = str(row["seasonality"]).strip().upper()
+
     if seasonality in {"HIGH", "SEASONAL", "YES", "TRUE"}:
         multiplier = config["seasonal_safety_multiplier"]
     else:
         multiplier = config["normal_safety_multiplier"]
 
     adjusted_safety_stock = math.ceil(safety_stock * multiplier)
-
     lead_time_demand = daily_sales * lead_time
 
-    # Mentor formula baseline:
     mentor_target = lead_time_demand + adjusted_safety_stock
-
-    # Extra business rule: do not recommend below the configured reorder target.
     target_stock = max(reorder_level, mentor_target)
 
-    # Do not force a purchase if the target is already met.
     quantity = max(0, math.ceil(target_stock - current_stock))
 
-    # A flagged product at target stock gets a minimum suggestion of 1 unit.
-    if quantity == 0 and row["decision_category"] in REORDER_STATUSES:
+    # Minimum suggestion for a flagged reorder product.
+    if quantity == 0:
         quantity = 1
 
     return int(quantity)
+
+
+def calculate_days_of_stock(row):
+    """Return stock coverage, or None when sales are zero."""
+
+    daily_sales = float(row["avg_daily_sales"])
+
+    if daily_sales <= 0:
+        return None
+
+    return float(row["current_stock"]) / daily_sales
 
 
 def create_reorder_reason(row):
@@ -231,20 +269,36 @@ def create_reorder_reason(row):
 
     if status == "URGENT REORDER":
         return (
-            f"Stock is below the safety-stock level. "
+            "Stock is below the safety-stock level. "
             f"Review the suggested {quantity} {row['unit']} replenishment."
         )
+
     if status == "REORDER SOON":
         return (
-            f"Stock has reached the reorder zone. "
+            "Stock has reached the reorder zone. "
             f"Suggested quantity: {quantity} {row['unit']}."
         )
+
     if status == "OVERSTOCK RISK":
+        if pd.notna(days):
+            return (
+                f"Stock may cover approximately {days:.1f} days of sales. "
+                "Review future purchases before replenishing."
+            )
+
+        return "Review excess stock and future purchasing plans."
+
+    if status == NO_SALES_STATUS:
         return (
-            f"Stock may cover approximately {days:.1f} days of sales. "
-            "Review future purchases before replenishing."
+            "No daily sales have been recorded. "
+            "Review product demand and sales history before "
+            "making any replenishment decision."
         )
-    return "Stock is within the configured healthy range; no reorder is suggested."
+
+    return (
+        "Stock is within the configured healthy range; "
+        "no reorder is suggested."
+    )
 
 
 def create_reorder_action(row):
@@ -253,11 +307,22 @@ def create_reorder_action(row):
     unit = row["unit"]
 
     if status == "URGENT REORDER":
-        return f"Prioritize human review of a {quantity} {unit} replenishment."
+        return (
+            f"Prioritize human review of a {quantity} {unit} replenishment."
+        )
+
     if status == "REORDER SOON":
         return f"Plan and review a {quantity} {unit} replenishment soon."
+
     if status == "OVERSTOCK RISK":
         return "Review excess stock and pause unnecessary replenishment."
+
+    if status == NO_SALES_STATUS:
+        return (
+            "Manually review product demand and stock. "
+            "Do not reorder automatically."
+        )
+
     return "Continue routine inventory monitoring."
 
 
@@ -270,13 +335,8 @@ def main():
     df = load_and_validate_data()
     config = load_config()
 
-    # Guard against division by zero when calculating days of stock.
     df["days_of_stock_remaining"] = df.apply(
-        lambda row: (
-            float(row["current_stock"]) / float(row["avg_daily_sales"])
-            if float(row["avg_daily_sales"]) > 0
-            else math.inf
-        ),
+        calculate_days_of_stock,
         axis=1,
     )
 
@@ -287,6 +347,7 @@ def main():
 
     df["reorder_reason"] = df.apply(create_reorder_reason, axis=1)
     df["reorder_action"] = df.apply(create_reorder_action, axis=1)
+
     df["disclaimer"] = (
         "AI-generated planning suggestion only. "
         "Review actual demand, supplier pack sizes, budget, and stock "
@@ -297,8 +358,18 @@ def main():
         raise ValueError("Negative reorder quantities are not allowed.")
 
     flagged = df["decision_category"].isin(REORDER_STATUSES)
+
     if (df.loc[~flagged, "recommended_reorder_quantity"] != 0).any():
-        raise ValueError("Non-reorder products must have zero reorder quantity.")
+        raise ValueError(
+            "Non-reorder products must have zero reorder quantity."
+        )
+
+    no_sales = df["decision_category"] == NO_SALES_STATUS
+
+    if (df.loc[no_sales, "recommended_reorder_quantity"] != 0).any():
+        raise ValueError(
+            "No-sales products must have zero reorder quantity."
+        )
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_FILE, index=False)
@@ -322,6 +393,11 @@ def main():
         "Products needing replenishment:",
         int((df["recommended_reorder_quantity"] > 0).sum()),
     )
+    print(
+        "Products requiring no-sales review:",
+        int(no_sales.sum()),
+    )
+
     print("Output saved to:", OUTPUT_FILE)
     print("\nAll recommendations require human review.")
 

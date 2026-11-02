@@ -1,3 +1,4 @@
+
 import json
 import math
 import pandas as pd
@@ -104,15 +105,19 @@ def classify_product(row, config):
     if stock < adjusted_safety:
         return "URGENT REORDER"
 
-    # Rule 2: Excess stock compared with daily demand
-    if daily_sales > 0 and stock / daily_sales > OVERSTOCK_DAYS:
+    # Rule 2: No recorded sales
+    if daily_sales == 0:
+        return "NO SALES - REVIEW REQUIRED"
+
+    # Rule 3: Excess stock compared with daily demand
+    if stock / daily_sales > OVERSTOCK_DAYS:
         return "OVERSTOCK RISK"
 
-    # Rule 3: Stock may not cover lead-time demand
+    # Rule 4: Stock may not cover lead-time demand
     if stock <= effective_level:
         return "REORDER SOON"
 
-    # Rule 4: No immediate inventory risk identified
+    # Rule 5: No immediate inventory risk identified
     return "STOCK HEALTHY"
 
 
@@ -133,6 +138,13 @@ def explain_decision(row, config):
             f"Current stock ({stock:g}) is below adjusted safety "
             f"stock ({adjusted_safety:g}). Prioritize replenishment "
             "and review the suggested quantity."
+        )
+
+    if category == "NO SALES - REVIEW REQUIRED":
+        return (
+            "No daily sales have been recorded for this product. "
+            "Review its demand and current stock before making "
+            "any replenishment decision."
         )
 
     if category == "OVERSTOCK RISK":
@@ -193,7 +205,10 @@ def run_decision_engine():
         "reorder_level",
     ]
 
-    missing = [column for column in required_columns if column not in df.columns]
+    missing = [
+        column for column in required_columns
+        if column not in df.columns
+    ]
 
     if missing:
         print(f"\nERROR: Missing required columns: {missing}")
@@ -305,6 +320,7 @@ def run_decision_engine():
         "URGENT REORDER": "Prioritize replenishment",
         "REORDER SOON": "Plan a purchase soon",
         "OVERSTOCK RISK": "Review and reduce future orders",
+        "NO SALES - REVIEW REQUIRED": "Review product demand and stock",
         "STOCK HEALTHY": "Continue routine monitoring",
     }
 
@@ -329,6 +345,7 @@ def run_decision_engine():
         "URGENT REORDER",
         "REORDER SOON",
         "OVERSTOCK RISK",
+        "NO SALES - REVIEW REQUIRED",
         "STOCK HEALTHY",
     ]
 
@@ -340,7 +357,7 @@ def run_decision_engine():
     print("-" * 40)
 
     for category, count in summary.items():
-        print(f"{category:<22}: {count}")
+        print(f"{category:<30}: {count}")
 
     # 13. Save results
     try:
@@ -353,6 +370,7 @@ def run_decision_engine():
     print(f"Total products analyzed: {len(df)}")
     print("\nIMPORTANT:")
     print("These are advisory suggestions, not automatic purchase orders.")
+    print("Products with no recorded sales require manual review.")
     print("Review recommendations before making purchasing decisions.")
     print("\nModule 4 completed successfully!")
 
