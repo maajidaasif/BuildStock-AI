@@ -1,0 +1,199 @@
+product_id,validation_status,validation_issues,decision_category,recommended_reorder_quantity,ai_explanation
+CP001,PASS,None,REORDER SOON,15,"Product: OPC 53 Grade Cement
+Product ID: CP001
+Unit: bags
+Current stock: 100 bags
+Average daily sales: 15 bags per day
+Lead time: 5 days
+Safety stock: 40 bags
+Inventory status: REORDER SOON
+Rule-based reason: Current stock (100) is at or below the effective reorder threshold (115). Estimated lead-time demand is 75 units. Plan replenishment and review the suggested quantity.
+Recommended reorder quantity: 15 bags
+Adjusted safety stock: 40 bags
+Lead-time demand: 75 bags
+Effective reorder level: 115 bags
+
+AI explanation: The inventory is running low and needs to be replenished soon to avoid running out.
+
+A human must review and approve any purchasing decision."
+CP002,PASS,None,STOCK HEALTHY,0,"Product: PPC Cement
+Product ID: CP002
+Unit: bags
+Current stock: 180 bags
+Average daily sales: 12 bags per day
+Lead time: 4 days
+Safety stock: 35 bags
+Inventory status: STOCK HEALTHY
+Rule-based reason: Current stock (180) is above the effective reorder threshold (83) and does not exceed the defined overstock threshold. Continue routine monitoring.
+Recommended reorder quantity: 0 bags
+Adjusted safety stock: 35 bags
+Lead-time demand: 48 bags
+Effective reorder level: 83 bags
+
+AI explanation: The inventory is healthy with enough stock to cover sales and lead time, no reorder is needed at this time.
+
+A human must review and approve any purchasing decision."
+CP003,PASS,None,REORDER SOON,2,"Product: White Cement
+Product ID: CP003
+Unit: bags
+Current stock: 25 bags
+Average daily sales: 3 bags per day
+Lead time: 4 days
+Safety stock: 15 bags
+Inventory status: REORDER SOON
+Rule-based reason: Current stock (25) is at or below the effective reorder threshold (27). Estimated lead-time demand is 12 units. Plan replenishment and review the suggested quantity.
+Recommended reorder quantity: 2 bags
+Adjusted safety stock: 15 bags
+Lead-time demand: 12 bags
+Effective reorder level: 27 bags
+
+AI explanation: The inventory is running low and needs to be restocked soon to avoid running out.
+
+A human must review and approve any purchasing decision."
+CP004,PASS,None,REORDER SOON,4,"Product: 8mm TMT Steel Rods
+Product ID: CP004
+Unit: tons
+Current stock: 8 tons
+Average daily sales: 1 tons per day
+Lead time: 7 days
+Safety stock: 4 tons
+Inventory status: REORDER SOON
+Rule-based reason: Current stock (8) is at or below the effective reorder threshold (12). Estimated lead-time demand is 7 units. Plan replenishment and review the suggested quantity.
+Recommended reorder quantity: 4 tons
+Adjusted safety stock: 5 tons
+Lead-time demand: 7 tons
+Effective reorder level: 12 tons
+
+AI explanation: The inventory is running low and needs to be replenished soon to avoid running out.
+
+A human must review and approve any purchasing decision."
+CP005,PASS,None,REORDER SOON,2,"Product: 10mm TMT Steel Rods
+Product ID: CP005
+Unit: tons
+Current stock: 12 tons
+Average daily sales: 1.5 tons per day
+Lead time: 6 days
+Safety stock: 5 tons
+Inventory status: REORDER SOON
+Rule-based reason: Current stock (12) is at or below the effective reorder threshold (14). Estimated lead-time demand is 9 units. Plan replenishment and review the suggested quantity.
+Recommended reorder quantity: 2 tons
+Adjusted safety stock: 5 tons
+Lead-time demand: 9 tons
+Effective reorder level: 14 tons
+
+AI explanation: The inventory is running low and needs to be replenished soon to avoid stockouts.
+
+A human must review and approve any purchasing decision."
+CP006,PASS,None,URGENT REORDER,11,"Product: 12mm TMT Steel Rods
+Product ID: CP006
+Unit: tons
+Current stock: 3 tons
+Average daily sales: 1 tons per day
+Lead time: 8 days
+Safety stock: 5 tons
+Inventory status: URGENT REORDER
+Rule-based reason: Current stock (3) is below adjusted safety stock (6). Prioritize replenishment and review the suggested quantity.
+Recommended reorder quantity: 11 tons
+Adjusted safety stock: 6 tons
+Lead-time demand: 8 tons
+Effective reorder level: 14 tons
+
+AI explanation: The inventory is low and needs urgent replenishment to avoid stockouts.
+
+A human must review and approve any purchasing decision."
+CP007,PASS,None,STOCK HEALTHY,0,16mm TMT Steel Rods currently has 15 tons in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (15) is above the effective reorder threshold (11) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP008,PASS,None,STOCK HEALTHY,0,"Product: Binding Wire
+Product ID: CP008
+Unit: kg
+Current stock: 200 kg
+Average daily sales: 20 kg per day
+Lead time: 3 days
+Safety stock: 50 kg
+Inventory status: STOCK HEALTHY
+Rule-based reason: Current stock (200) is above the effective reorder threshold (110) and does not exceed the defined overstock threshold. Continue routine monitoring.
+Recommended reorder quantity: 0 kg
+Adjusted safety stock: 50 kg
+Lead-time demand: 60 kg
+Effective reorder level: 110 kg
+
+AI explanation: The inventory is healthy with enough stock to cover sales and lead time, no reorder needed.
+
+A human must review and approve any purchasing decision."
+CP009,PASS,None,STOCK HEALTHY,0,Red Clay Bricks currently has 5000 units in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (5000) is above the effective reorder threshold (2700) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP010,PASS,None,STOCK HEALTHY,0,Fly Ash Bricks currently has 2500 units in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (2500) is above the effective reorder threshold (1700) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP011,PASS,None,REORDER SOON,20,"Product: AAC Blocks
+Product ID: CP011
+Unit: units
+Current stock: 300 units
+Average daily sales: 40 units per day
+Lead time: 5 days
+Safety stock: 100 units
+Inventory status: REORDER SOON
+Rule-based reason: Current stock (300) is at or below the effective reorder threshold (320). Estimated lead-time demand is 200 units. Plan replenishment and review the suggested quantity.
+Recommended reorder quantity: 20 units
+Adjusted safety stock: 120 units
+Lead-time demand: 200 units
+Effective reorder level: 320 units
+
+AI explanation: The inventory is running low and needs to be replenished soon to avoid stockouts.
+
+A human must review and approve any purchasing decision."
+CP012,PASS,None,STOCK HEALTHY,0,M-Sand currently has 20 tons in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (20) is above the effective reorder threshold (18) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP013,PASS,None,STOCK HEALTHY,0,Blue Metal Gravel currently has 40 tons in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (40) is above the effective reorder threshold (19) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP014,PASS,None,STOCK HEALTHY,0,Exterior Primer currently has 80 litres in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (80) is above the effective reorder threshold (62) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP015,PASS,None,URGENT REORDER,34,"Product: Weatherproof Exterior Paint
+Product ID: CP015
+Unit: litres
+Current stock: 15 litres
+Average daily sales: 5 litres per day
+Lead time: 5 days
+Safety stock: 20 litres
+Inventory status: URGENT REORDER
+Rule-based reason: Current stock (15) is below adjusted safety stock (24). Prioritize replenishment and review the suggested quantity.
+Recommended reorder quantity: 34 litres
+Adjusted safety stock: 24 litres
+Lead-time demand: 25 litres
+Effective reorder level: 49 litres
+
+AI explanation: The inventory is low and needs urgent replenishment to avoid stockouts.
+
+A human must review and approve any purchasing decision."
+CP016,PASS,None,STOCK HEALTHY,0,Wall Care Putty currently has 600 kg in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (600) is above the effective reorder threshold (390) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP017,PASS,None,STOCK HEALTHY,0,Waterproofing Chemical currently has 50 litres in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (50) is above the effective reorder threshold (38) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP018,PASS,None,STOCK HEALTHY,0,PVC Pipes currently has 200 units in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (200) is above the effective reorder threshold (110) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP019,PASS,None,URGENT REORDER,46,"Product: CPVC Pipes
+Product ID: CP019
+Unit: units
+Current stock: 8 units
+Average daily sales: 5 units per day
+Lead time: 6 days
+Safety stock: 20 units
+Inventory status: URGENT REORDER
+Rule-based reason: Current stock (8) is below adjusted safety stock (24). Prioritize replenishment and review the suggested quantity.
+Recommended reorder quantity: 46 units
+Adjusted safety stock: 24 units
+Lead-time demand: 30 units
+Effective reorder level: 54 units
+
+AI explanation: The inventory is low and needs urgent attention to avoid running out of CPVC Pipes.
+
+A human must review and approve any purchasing decision."
+CP020,PASS,None,STOCK HEALTHY,0,PVC Pipe Solvent Cement currently has 150 cans in stock. Inventory status: STOCK HEALTHY. Rule-based reason: Current stock (150) is above the effective reorder threshold (40) and does not exceed the defined overstock threshold. Continue routine monitoring. The rule engine currently classifies this product as having healthy inventory. The current rules do not recommend additional stock. A human must review and approve any purchasing decision.
+CP021,PASS,None,URGENT REORDER,54,"Product: Emergency Cement Stock
+Product ID: CP021
+Unit: bags
+Current stock: 0 bags
+Average daily sales: 5 bags per day
+Lead time: 6 days
+Safety stock: 20 bags
+Inventory status: URGENT REORDER
+Rule-based reason: Current stock (0) is below adjusted safety stock (24). Prioritize replenishment and review the suggested quantity.
+Recommended reorder quantity: 54 bags
+Adjusted safety stock: 24 bags
+Lead-time demand: 30 bags
+Effective reorder level: 54 bags
+
+AI explanation: The inventory is critically low and needs urgent restocking to avoid running out.
+
+A human must review and approve any purchasing decision."
+CP022,PASS,None,OVERSTOCK RISK,0,"Excess Binding Wire Stock currently has 500 kg in stock. Inventory status: OVERSTOCK RISK. Rule-based reason: Current stock may last approximately 250.0 days, exceeding the 60-day threshold. Review future orders. The rule engine identifies a possible excess-stock risk. Review upcoming demand before replenishing. The current rules do not recommend additional stock. A human must review and approve any purchasing decision."
